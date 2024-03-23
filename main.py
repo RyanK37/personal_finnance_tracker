@@ -22,7 +22,7 @@ user_entry.grid(row=1, column=1)
 pass_entry = tk.Entry(main_window, show="*", font=("calibri", 14))
 pass_entry.grid(row=2, column=1)
 
-def check_pass():
+def log_in():
     flag = False
     for data in user_data:
         if user_entry.get() == data["User"] and pass_entry.get() == data["Password"]:
@@ -54,7 +54,7 @@ def clear():
     pass_entry.delete(0, tk.END)
 
 
-submit_icon = tk.Button(main_window, text="Submit", font=("calibri", 14), command=check_pass)
+submit_icon = tk.Button(main_window, text="Submit", font=("calibri", 14), command=log_in)
 submit_icon.grid(row =3, column=0)
 
 register_icon = tk.Button(main_window, text="Register", font=("calibri", 14), command=lambda: register(user_data))
