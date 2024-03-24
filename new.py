@@ -22,26 +22,51 @@ username_entry.grid(row=1, column=1)
 password_entry = tk.Entry(start_window, show="*", font=("calibri", 14))
 password_entry.grid(row=2, column=1)
 
+def update_balance_label():
+    balance.config(text="Current balance : " + str(account_balance))
+
 # ========================================================================
 
-def show_tran(window):
-    window.withdraw()
+def show_tran():
     tran2 = tk.Tk()
     tran2.geometry("700x400")
     
     for data in tran_data:
-        show = tk.Label(tran2, text=f"ID : {data['ID']} | Type : {data['type']} | Category : {data['category']} | Amount : {data['amount']} | payee/source : {data['payee/source']} |date : {data['date']}", font=("calibri", 14))
+        show = tk.Label(tran2, text=str(data), font=("calibri", 14))
         show.pack()
     tran2.mainloop()
         
 
 # ========================================================================
+
+def update_tran_data(type, category, amount, date, source):
+    global account_balance, tran_data
+     
+    new = rd.randint(1000, 9999)
+    if new not in check_unique:
+        random_id = new
+        check_unique.add(new)
+            
+    new_tran_data = {"ID" : random_id, "type" : type , "category" : category, "amount" : amount, "payee/source" : source, "date" : date}
+    tran_data.append(new_tran_data)
+    
+    if type == "Income":
+        account_balance += amount
+        
+    elif type == "Expenses":
+        account_balance -= amount
+    update_balance_label()
+    print(account_balance)
+
+# =====================================================================
+
 def add_tran():
     add_window =tk.Tk()
     add_window.geometry("500x500")
     
-    radio_frame = tk.Frame()
+    radio_frame = tk.Frame(add_window)
     radio_frame.pack()
+    
     choose_type = tk.StringVar(value="Income")
     income_radio = tk.Radiobutton(radio_frame, text="Income", variable=choose_type, value="Income")
     income_radio.pack(side="left")
@@ -50,21 +75,12 @@ def add_tran():
     
     categories = {"Income": ["Salary", "Pension", "Interest", "Others"],
                   "Expenses": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
-    category_start = tk.StringVar(value="Salary")
+    category_real = tk.StringVar(value="Salary")
     
-    # def update_type():
-    #     if choose_type.get() == "Income":
-    #         category_start.set(categories["Income"][0])
-    #         category_menu.config(*categories["Income"])
-    #     elif choose_type.get() == "Expenses":
-    #         category_start.set(categories["Expenses"][0])
-    #         category_menu.config(*categories["Expenses"])
-    
-    # choose_type.trace_add("write", update_type)
     
     category_label =tk.Label(add_window, text="Category")
     category_label.pack()
-    category_menu = tk.OptionMenu(add_window, category_start, *categories["Income"] + categories["Expenses"])
+    category_menu = tk.OptionMenu(add_window, category_real, *categories["Income"] + categories["Expenses"])
     category_menu.pack()
     
     amount_label = tk.Label(add_window, text="Amount")
@@ -82,7 +98,7 @@ def add_tran():
     source_entry = tk.Entry(add_window)
     source_entry.pack()
     
-    add_btn = tk.Button(add_window, text="Submit" , font=("calibri", 14))
+    add_btn = tk.Button(add_window, text="Submit" , font=("calibri", 14), command=lambda : update_tran_data(choose_type.get(), category_real.get(), amount_entry.get(), date_entry.get(), source_entry.get()))
     add_btn.pack()
     add_window.mainloop()
     
@@ -97,15 +113,16 @@ def tran_1():
     
     start_window.destroy()
     
+    global balance
     balance = tk.Label(tran1, text="Current balance : "  + str(account_balance), font=("calibri", 14))
     balance.pack()
-    show_trans_btn = tk.Button(tran1, text="Show Transistions", font=("calibri", 14), command= lambda: show_tran(tran1))
+    show_trans_btn = tk.Button(tran1, text="Show transations", font=("calibri", 14), command=show_tran)
     show_trans_btn.pack()
     
-    test = tk.Button(tran1, text="test", command=add_tran)
-    test.pack()
-        
+    add_tran_btn = tk.Button(tran1, text="Add transation", command=add_tran)
+    add_tran_btn.pack()
     tran1.mainloop()
+        
 # ========================================================================
 def clear():
     username_entry.delete(0, "end")
