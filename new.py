@@ -41,7 +41,7 @@ def show_tran():
 
 def update_tran_data(type, category, amount, date, source):
     global account_balance, tran_data
-     
+    check_unique = set()
     new = rd.randint(1000, 9999)
     if new not in check_unique:
         random_id = new
@@ -98,11 +98,35 @@ def add_tran():
     source_entry = tk.Entry(add_window)
     source_entry.pack()
     
-    add_btn = tk.Button(add_window, text="Submit" , font=("calibri", 14), command=lambda : update_tran_data(choose_type.get(), category_real.get(), amount_entry.get(), date_entry.get(), source_entry.get()))
+    add_btn = tk.Button(add_window, text="Submit" , font=("calibri", 14), command=lambda : update_tran_data(choose_type.get(), category_real.get(), int(amount_entry.get()), date_entry.get(), source_entry.get()))
     add_btn.pack()
     add_window.mainloop()
     
 # ======================================================================================================
+
+def del_tran():
+    
+    del_window = tk.Tk()
+    del_window.geometry("300x300")
+    
+    id_label = tk.Label(del_window, text="Please input ID to delete!")
+    id_label.pack()
+    id_entry = tk.Entry(del_window)
+    id_entry.pack()
+    
+    global tran_data
+    def delete_update():
+        for i in tran_data:
+            if i["ID"] == int(id_entry.get()):
+                tran_data.remove(i)
+                update_balance_label()
+    
+    del_btn = tk.Button(del_window, text="Delete", font=("calibri", 14), command=delete_update)
+    del_btn.pack()
+    del_window.mainloop()
+
+# ======================================================================================================
+
 def tran_1():
     tran1 = tk.Tk()
     tran1.geometry("400x400")
@@ -119,8 +143,12 @@ def tran_1():
     show_trans_btn = tk.Button(tran1, text="Show transations", font=("calibri", 14), command=show_tran)
     show_trans_btn.pack()
     
-    add_tran_btn = tk.Button(tran1, text="Add transation", command=add_tran)
+    add_tran_btn = tk.Button(tran1, text="Add transation", font=("calibri", 14), command=add_tran)
     add_tran_btn.pack()
+    
+    del_tran_btn = tk.Button(tran1, text="Delete transation", font=("calibri" , 14), command=del_tran)
+    del_tran_btn.pack()
+    
     tran1.mainloop()
         
 # ========================================================================
