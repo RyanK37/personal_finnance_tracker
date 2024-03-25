@@ -56,13 +56,17 @@ def update_tran_data(type, category, amount, date, source):
     elif type == "Expenses":
         account_balance -= amount
     update_balance_label()
+    add_window.destroy()
+    
     print(account_balance)
 
 # =====================================================================
 
 def add_tran():
+    global add_window
     add_window =tk.Tk()
     add_window.geometry("500x500")
+    add_window.title("Add Transations")
     
     radio_frame = tk.Frame(add_window)
     radio_frame.pack()
@@ -105,9 +109,9 @@ def add_tran():
 # ======================================================================================================
 
 def del_tran():
-    
     del_window = tk.Tk()
     del_window.geometry("300x300")
+    del_window.title("Delete transations")
     
     id_label = tk.Label(del_window, text="Please input ID to delete!")
     id_label.pack()
@@ -120,6 +124,7 @@ def del_tran():
             if i["ID"] == int(id_entry.get()):
                 tran_data.remove(i)
                 update_balance_label()
+        del_window.destroy()
     
     del_btn = tk.Button(del_window, text="Delete", font=("calibri", 14), command=delete_update)
     del_btn.pack()
@@ -140,7 +145,7 @@ def tran_1():
     global balance
     balance = tk.Label(tran1, text="Current balance : "  + str(account_balance), font=("calibri", 14))
     balance.pack()
-    show_trans_btn = tk.Button(tran1, text="Show transations", font=("calibri", 14), command=show_tran)
+    show_trans_btn = tk.Button(tran1, text="Summary", font=("calibri", 14), command=show_tran)
     show_trans_btn.pack()
     
     add_tran_btn = tk.Button(tran1, text="Add transation", font=("calibri", 14), command=add_tran)
