@@ -2,7 +2,7 @@ import tkinter as tk
 import random as rd
 
 account_balance = 0
-tran_data = [{"ID" : 12345, "type" : "Income", "category" : "Salary", "amount" : 1000, "payee/source" : "salary","date" : "2-April"  }]
+tran_data = []
 
 # ========================================================================
 
@@ -30,13 +30,16 @@ def update_balance_label():
 def show_tran():
     tran2 = tk.Tk()
     tran2.geometry("700x400")
-    
+    tran2.title("Dashboard")
+    if len(tran_data) == 0 :
+        empty_data = tk.Label(tran2, text="Empty transation", font=("calibri", 14))
+        empty_data.pack()
+        
     for data in tran_data:
         show = tk.Label(tran2, text=str(data), font=("calibri", 14))
         show.pack()
     tran2.mainloop()
         
-
 # ========================================================================
 
 def update_tran_data(type, category, amount, date, source):
@@ -57,8 +60,6 @@ def update_tran_data(type, category, amount, date, source):
         account_balance -= amount
     update_balance_label()
     add_window.destroy()
-    
-    print(account_balance)
 
 # =====================================================================
 
@@ -80,7 +81,6 @@ def add_tran():
     categories = {"Income": ["Salary", "Pension", "Interest", "Others"],
                   "Expenses": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
     category_real = tk.StringVar(value="Salary")
-    
     
     category_label =tk.Label(add_window, text="Category")
     category_label.pack()
@@ -120,9 +120,14 @@ def del_tran():
     
     global tran_data
     def delete_update():
+        global account_balance
         for i in tran_data:
             if i["ID"] == int(id_entry.get()):
-                tran_data.remove(i)
+                if i["type"] == "Income":
+                    account_balance -= i["amount"]
+                elif i["type"] == "Expenses":
+                    account_balance += i["amount"]
+                    tran_data.remove(i)
                 update_balance_label()
         del_window.destroy()
     
@@ -163,9 +168,9 @@ def clear():
 
 
 submit_icon = tk.Button(start_window, text="Submit", font=("calibri", 14), command=tran_1)
-submit_icon.grid(row =3, column=0)
+submit_icon.grid(row =4, column=0)
 
 clear_btn = tk.Button(start_window, text="Clear", font=("calibri", 14), command=clear)
-clear_btn.grid(row=3, column=1)
+clear_btn.grid(row=4, column=1)
 
 start_window.mainloop()
