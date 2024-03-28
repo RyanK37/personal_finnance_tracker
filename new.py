@@ -118,7 +118,6 @@ def del_tran():
     id_entry = tk.Entry(del_window)
     id_entry.pack()
     
-    global tran_data
     def delete_update():
         global account_balance
         for i in tran_data:
@@ -150,6 +149,11 @@ def tran_1():
     global balance
     balance = tk.Label(tran1, text="Current balance : "  + str(account_balance), font=("calibri", 14))
     balance.pack()
+    
+    if tran_data == []:
+        empty_label = tk.Label(tran1, text="No transation currently!!!", font=("calibri", 14))
+        empty_label.pack()
+        
     show_trans_btn = tk.Button(tran1, text="Summary", font=("calibri", 14), command=show_tran)
     show_trans_btn.pack()
     
