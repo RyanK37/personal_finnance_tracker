@@ -25,6 +25,9 @@ password_entry.grid(row=2, column=1)
 def update_balance_label():
     balance.config(text="Current balance : " + str(account_balance))
 
+def update_last_tran():
+    last_tran_label.config(text="Last transation : " + str(tran_data[-1]))
+    
 # ========================================================================
 
 def show_tran():
@@ -59,6 +62,7 @@ def update_tran_data(type, category, amount, date, source):
     elif type == "Expenses":
         account_balance -= amount
     update_balance_label()
+    update_last_tran()  
     add_window.destroy()
 
 # =====================================================================
@@ -104,6 +108,7 @@ def add_tran():
     
     add_btn = tk.Button(add_window, text="Submit" , font=("calibri", 14), command=lambda : update_tran_data(choose_type.get(), category_real.get(), int(amount_entry.get()), date_entry.get(), source_entry.get()))
     add_btn.pack()
+    
     add_window.mainloop()
     
 # ======================================================================================================
@@ -128,6 +133,7 @@ def del_tran():
                     account_balance += i["amount"]
                     tran_data.remove(i)
                 update_balance_label()
+                update_last_tran()
         del_window.destroy()
     
     del_btn = tk.Button(del_window, text="Delete", font=("calibri", 14), command=delete_update)
@@ -149,10 +155,10 @@ def tran_1():
     global balance
     balance = tk.Label(tran1, text="Current balance : "  + str(account_balance), font=("calibri", 14))
     balance.pack()
-    
-    if tran_data == []:
-        empty_label = tk.Label(tran1, text="No transation currently!!!", font=("calibri", 14))
-        empty_label.pack()
+
+    global last_tran_label
+    last_tran_label = tk.Label(tran1, text="No transation currently!!!", font=("calibri", 14))
+    last_tran_label.pack()
         
     show_trans_btn = tk.Button(tran1, text="Summary", font=("calibri", 14), command=show_tran)
     show_trans_btn.pack()
