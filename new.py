@@ -37,10 +37,9 @@ def pie_chart():
     income_list = [data for data in tran_data if data["type"] == "Income"]
     expense_list = [data for data in tran_data if data["type"] == "Expense"]
     
-    print(income_list)
-    def draw_pie_chart(list, type, rank):
+    def draw_pie_chart(data, type, rank):
         total_amount  = {}
-        for i in list:
+        for i in data:
             category = i["category"]
             amount = i["amount"]
             if category in total_amount:
@@ -56,27 +55,31 @@ def pie_chart():
         plt.title(type)
         plt.legend(label, title = type, loc ="upper center", bbox_to_anchor=(0.5, -0.1))
         
-    plt.figure()  
+    plt.figure()
     draw_pie_chart(income_list, "Income", 1)
     draw_pie_chart(expense_list, "Expense", 2)
+    plt.suptitle("Income and Expense Pie Charts", fontsize=16, fontname ="calibri")
     plt.show()
 
     
     
 # ========================================================================
 
-def show_tran():
-    tran2 = tk.Tk()
-    tran2.geometry("700x400")
-    tran2.title("Dashboard")
+def summary():
+    summary_window = tk.Tk()
+    summary_window.geometry("700x400")
+    summary_window.title("Dashboard")
     if len(tran_data) == 0 :
-        empty_data = tk.Label(tran2, text="Empty transation", font=("calibri", 14))
+        empty_data = tk.Label(summary_window, text="Empty transation", font=("calibri", 14))
         empty_data.pack()
         
     for data in tran_data:
-        show = tk.Label(tran2, text=str(data), font=("calibri", 14))
+        show = tk.Label(summary_window, text=str(data), font=("calibri", 14))
         show.pack()
-    tran2.mainloop()
+        
+    piechart_btn = tk.Button(summary_window, text="Pie Chart",  font=("calibri", 14), command=pie_chart)
+    piechart_btn.pack()
+    summary_window.mainloop()
         
 # ========================================================================
 
@@ -178,35 +181,33 @@ def del_tran():
 # ======================================================================================================
 
 def tran_1():
-    tran1 = tk.Tk()
-    tran1.geometry("400x400")
-    tran1.title("Personal Finnace Tracker")
+    main_window = tk.Tk()
+    main_window.geometry("400x400")
+    main_window.title("Personal Finnace Tracker")
     
-    welcome = tk.Label(tran1, text="Welcome " + str(username_entry.get()) , font=("calibri", 14))
+    welcome = tk.Label(main_window, text="Welcome " + str(username_entry.get()) , font=("calibri", 14))
     welcome.pack()
     
     start_window.destroy()
     
     global balance
-    balance = tk.Label(tran1, text="Current balance : "  + str(account_balance), font=("calibri", 14))
+    balance = tk.Label(main_window, text="Current balance : "  + str(account_balance), font=("calibri", 14))
     balance.pack()
 
     global last_tran_label
-    last_tran_label = tk.Label(tran1, text="No transation currently!!!", font=("calibri", 14))
+    last_tran_label = tk.Label(main_window, text="No transation currently!!!", font=("calibri", 14))
     last_tran_label.pack()
         
-    show_trans_btn = tk.Button(tran1, text="Summary", font=("calibri", 14), command=show_tran)
-    show_trans_btn.pack()
+    summarys_btn = tk.Button(main_window, text="Summary", font=("calibri", 14), command=summary)
+    summarys_btn.pack()
     
-    add_tran_btn = tk.Button(tran1, text="Add transation", font=("calibri", 14), command=add_tran)
+    add_tran_btn = tk.Button(main_window, text="Add transation", font=("calibri", 14), command=add_tran)
     add_tran_btn.pack()
     
-    del_tran_btn = tk.Button(tran1, text="Delete transation", font=("calibri" , 14), command=del_tran)
+    del_tran_btn = tk.Button(main_window, text="Delete transation", font=("calibri" , 14), command=del_tran)
     del_tran_btn.pack()
     
-    test_btn = tk.Button(tran1, text="test", command=pie_chart)
-    test_btn.pack()
-    tran1.mainloop()
+    main_window.mainloop()
         
 # ========================================================================
 def clear():
