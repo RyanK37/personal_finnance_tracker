@@ -1,5 +1,6 @@
 import tkinter as tk
 import random as rd
+import matplotlib.pyplot as plt
 
 account_balance = 0
 tran_data = []
@@ -24,9 +25,43 @@ password_entry.grid(row=2, column=1)
 
 def update_balance_label():
     balance.config(text="Current balance : " + str(account_balance))
+    
+# ========================================================================
 
 def update_last_tran():
     last_tran_label.config(text="Last transation : " + str(tran_data[-1]))
+    
+# ========================================================================
+    
+def pie_chart():
+    income_list = [data for data in tran_data if data["type"] == "Income"]
+    expense_list = [data for data in tran_data if data["type"] == "Expense"]
+    
+    print(income_list)
+    def draw_pie_chart(list, type, rank):
+        total_amount  = {}
+        for i in list:
+            category = i["category"]
+            amount = i["amount"]
+            if category in total_amount:
+                total_amount[category] += amount
+            else:
+                total_amount[category] = amount
+        
+        label = total_amount.keys()
+        size = total_amount.values()
+        
+        plt.subplot(1, 2, rank)
+        plt.pie(size, labels=label, autopct='%1.1f%%', )
+        plt.title(type)
+        plt.legend(label, title = type, loc ="upper center", bbox_to_anchor=(0.5, -0.1))
+        
+    plt.figure()  
+    draw_pie_chart(income_list, "Income", 1)
+    draw_pie_chart(expense_list, "Expense", 2)
+    plt.show()
+
+    
     
 # ========================================================================
 
@@ -59,7 +94,7 @@ def update_tran_data(type, category, amount, date, source):
     if type == "Income":
         account_balance += amount
         
-    elif type == "Expenses":
+    elif type == "Expense":
         account_balance -= amount
     update_balance_label()
     update_last_tran()  
@@ -79,16 +114,16 @@ def add_tran():
     choose_type = tk.StringVar(value="Income")
     income_radio = tk.Radiobutton(radio_frame, text="Income", variable=choose_type, value="Income")
     income_radio.pack(side="left")
-    expense_radio = tk.Radiobutton(radio_frame, text="Expenses", variable=choose_type, value="Expenses")
+    expense_radio = tk.Radiobutton(radio_frame, text="Expense", variable=choose_type, value="Expense")
     expense_radio.pack(side="right")
     
     categories = {"Income": ["Salary", "Pension", "Interest", "Others"],
-                  "Expenses": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
+                  "Expense": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
     category_real = tk.StringVar(value="Salary")
     
     category_label =tk.Label(add_window, text="Category")
     category_label.pack()
-    category_menu = tk.OptionMenu(add_window, category_real, *categories["Income"] + categories["Expenses"])
+    category_menu = tk.OptionMenu(add_window, category_real, *categories["Income"] + categories["Expense"])
     category_menu.pack()
     
     amount_label = tk.Label(add_window, text="Amount")
@@ -129,9 +164,9 @@ def del_tran():
             if i["ID"] == int(id_entry.get()):
                 if i["type"] == "Income":
                     account_balance -= i["amount"]
-                elif i["type"] == "Expenses":
+                elif i["type"] == "Expense":
                     account_balance += i["amount"]
-                    tran_data.remove(i)
+                tran_data.remove(i)
                 update_balance_label()
                 update_last_tran()
         del_window.destroy()
@@ -169,6 +204,8 @@ def tran_1():
     del_tran_btn = tk.Button(tran1, text="Delete transation", font=("calibri" , 14), command=del_tran)
     del_tran_btn.pack()
     
+    test_btn = tk.Button(tran1, text="test", command=pie_chart)
+    test_btn.pack()
     tran1.mainloop()
         
 # ========================================================================
