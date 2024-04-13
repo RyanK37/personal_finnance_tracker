@@ -48,39 +48,65 @@ def filter_by_input(start, end, type, category, source):
                 each_data["payee/source"].lower() == source.lower():
                 filtered_list.append(each_data)
         return filtered_list
+    
+# ---------------------------------------------------------------------------------
 
+def filter_by_time(start, end, type):
+    start_date = pd.to_datetime(start, format="%d-%b-%Y")
+    end_date = pd.to_datetime(end, format="%d-%b-%Y")
+        
+    filtered_list = []
+    for each_data in tran_data:
+        if start_date <= pd.to_datetime(each_data["date"], format="%d-%b-%Y") <= end_date and each_data["type"] == type:
+            filtered_list.append(each_data)
+    return filtered_list
+            
 # ===============================================================================================================================
     
-def pie_chart():
-    income_list = [data for data in tran_data if data["type"] == "Income"]
-    expense_list = [data for data in tran_data if data["type"] == "Expense"]
+def draw_piechart(data_list):
+    total_amount  = {}
+    type = data_list[0]["type"]
+    for each in data_list:
+        category = each["category"]
+        amount = each["amount"]
+        if category in total_amount:
+            total_amount[category] += amount
+        else:
+            total_amount[category] = amount
     
-    def draw_pie_chart(data, type, rank):
-        total_amount  = {}
-        for i in data:
-            category = i["category"]
-            amount = i["amount"]
-            if category in total_amount:
-                total_amount[category] += amount
-            else:
-                total_amount[category] = amount
-        
-        label = total_amount.keys()
-        size = total_amount.values()
-        
-        plt.subplot(1, 2, rank)
-        plt.pie(size, labels=label, autopct='%1.1f%%', )
-        plt.title(type)
-        plt.legend(label, title = type, loc ="upper center", bbox_to_anchor=(0.5, -0.1))
-        
-    plt.figure()
-    draw_pie_chart(income_list, "Income", 1)
-    draw_pie_chart(expense_list, "Expense", 2)
-    plt.suptitle("Income and Expense Pie Charts", fontsize=16, fontname ="calibri")
+    label = total_amount.keys()
+    size = total_amount.values()
+    
+    plt.pie(size, labels=label, autopct='%1.1f%%', )
+    plt.title(type+ " filtered by time range")
+    plt.legend(loc="lower right")
+    plt.show()
+
+# ---------------------------------------------------------------------------------
+
+def draw_barchart(data_list):
+    total_amount  = {}
+    type = data_list[0]["type"]
+    for each in data_list:
+        category = each["category"]
+        amount = each["amount"]
+        if category in total_amount:
+            total_amount[category] += amount
+        else:
+            total_amount[category] = amount
+    
+    label = total_amount.keys()
+    size = total_amount.values()
+    
+    plt.bar(label, size)
+    plt.title(type+ " filtered by time range")
     plt.show()
 
 # ===============================================================================================================================
-def piechart():
+
+def piechart(previous_window):
+    previous_window.destroy()
+    
     piechart_window = tk.Tk()
     piechart_window.geometry("500x400")
     piechart_window.title("Pie Chart")    
@@ -107,25 +133,69 @@ def piechart():
     expense_radio = tk.Radiobutton(radio_frame, text="Expense", variable=choose_type, value="Expense", font=("calibri", 14))
     expense_radio.pack(side="right")
     
-    categories = {"Income": ["Salary", "Pension", "Interest", "Others"],
-                  "Expense": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
-    category_real = tk.StringVar(value="Salary")
-    
-    category_label =tk.Label(piechart_window, text="Category",  font=("calibri", 14))
-    category_label.pack()
-    category_menu = tk.OptionMenu(piechart_window, category_real, *categories["Income"] + categories["Expense"])
-    category_menu.pack()
-    
-    source_label = tk.Label(piechart_window, text="Payee/Source",  font=("calibri", 14))
-    source_label.pack()
-    source_entry = tk.Entry(piechart_window)
-    source_entry.pack()
-    
+    def draw_chart():
+        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get())
+        if filtered_data == []:
+            temp_window = tk.Tk()
+            temp_window.geometry("600x200")
+            temp_window.title("Empty transation!")
+            empty_alert = tk.Label(temp_window, text="There is no transation within the filtered range!!", font=("calibri", 16))
+            empty_alert.pack()
+            temp_window.mainloop()
+        else:
+            draw_piechart(filtered_data)
+        
+    draw_piechart_btn = tk.Button(piechart_window, text="Draw Pie Chart", font=("calibri", 14), command=draw_chart)
+    draw_piechart_btn.pack()
     piechart_window.mainloop()
     
 # ===============================================================================================================================
 
-
+def barchart(previous_window):
+    previous_window.destroy()
+    
+    barchart_window = tk.Tk()
+    barchart_window.geometry("500x400")
+    barchart_window.title("Pie Chart")    
+    
+    date_frame = tk.Frame(barchart_window)
+    date_frame.pack()
+    
+    date_range_from_label = tk.Label(date_frame, text="Time Range(From)", font=("calibri", 14))
+    date_range_from_label.grid(row=1, column=0)
+    date_range_from = tk.Entry(date_frame)
+    date_range_from.grid(row=1, column=1)
+    
+    date_range_to_label = tk.Label(date_frame, text="Time Range(To)", font=("calibri", 14))
+    date_range_to_label.grid(row=2, column=0)
+    date_range_to = tk.Entry(date_frame)
+    date_range_to.grid(row=2, column=1)
+    
+    radio_frame = tk.Frame(barchart_window)
+    radio_frame.pack()
+    
+    choose_type = tk.StringVar(value="Income")
+    income_radio = tk.Radiobutton(radio_frame, text="Income", variable=choose_type, value="Income", font=("calibri", 14))
+    income_radio.pack(side="left")
+    expense_radio = tk.Radiobutton(radio_frame, text="Expense", variable=choose_type, value="Expense", font=("calibri", 14))
+    expense_radio.pack(side="right")
+    
+    def draw_chart():
+        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get())
+        if filtered_data == []:
+            temp_window = tk.Tk()
+            temp_window.geometry("600x200")
+            temp_window.title("Empty transation!")
+            empty_alert = tk.Label(temp_window, text="There is no transation within the filtered range!!", font=("calibri", 16))
+            empty_alert.pack()
+            temp_window.mainloop()
+        else:
+            draw_barchart(filtered_data)
+        
+    draw_barchart_btn = tk.Button(barchart_window, text="Draw Bar Chart", font=("calibri", 14), command=draw_chart)
+    draw_barchart_btn.pack()
+    barchart_window.mainloop()
+    
 
 # ===============================================================================================================================
 
@@ -162,7 +232,7 @@ def summary():
     
     category_label =tk.Label(summary_window, text="Category",  font=("calibri", 14))
     category_label.pack()
-    category_menu = tk.OptionMenu(summary_window, category_real, *categories["Income"] + categories["Expense"])
+    category_menu = tk.OptionMenu(summary_window, category_real, *(categories["Income"] + categories["Expense"]))
     category_menu.pack()
     
     source_label = tk.Label(summary_window, text="Payee/Source",  font=("calibri", 14))
@@ -191,10 +261,10 @@ def summary():
     # print_btn = tk.Button(summary_window, text="Print", font=("calibri", 14), command=)
     # print_btn.pack()
     
-    # barchart_btn = tk.Button(summary_window, text="Bar Chart", font=("calibri", 14), command=)
-    # barchart_btn.pack()
+    barchart_btn = tk.Button(summary_window, text="Bar Chart", font=("calibri", 14), command=lambda: barchart(summary_window))
+    barchart_btn.pack()
     
-    piechart_btn = tk.Button(summary_window, text="Pie Chart",  font=("calibri", 14), command=pie_chart)
+    piechart_btn = tk.Button(summary_window, text="Pie Chart",  font=("calibri", 14), command=lambda: piechart(summary_window))
     piechart_btn.pack()
     
     summary_window.mainloop()
@@ -309,7 +379,7 @@ def del_tran():
 
 def main_window():
     main_window = tk.Tk()
-    main_window.geometry("400x400")
+    main_window.geometry("700x400")
     main_window.title("Personal Finnace Tracker")
     
     welcome = tk.Label(main_window, text="Welcome " + str(username_entry.get()) , font=("calibri", 14))
