@@ -267,11 +267,16 @@ def show_all_trans(window):
     pie_chart_btn = tk.Button(all_trans_window, text="Pie Charts", font=("calibri", 14), command=determine_pie)
     pie_chart_btn.pack()
     
-    bar_chart_btn = tk.Button(all_trans_window, text="Bar Charts", font=("calibri", 14), command=determine_barchart)
-    bar_chart_btn.pack()
+    # ---------------------------------------------------------------------------------
+    temp_frame = tk.Frame(all_trans_window)
+    temp_frame.pack()
     
-    go_back_btn =  tk.Button(all_trans_window, text="Back", font=("calibri", 14), command=lambda: go_back(all_trans_window, window))
-    go_back_btn.pack()
+    bar_chart_btn = tk.Button(temp_frame, text="Bar Charts", font=("calibri", 14), command=determine_barchart)
+    bar_chart_btn.pack(side="left", padx=5, pady=5)
+    
+    go_back_btn =  tk.Button(temp_frame, text="Back", font=("calibri", 14), command=lambda: go_back(all_trans_window, window))
+    go_back_btn.pack(side="right", padx=5, pady=5)
+    # ---------------------------------------------------------------------------------
     
     all_trans_window.mainloop()
     
@@ -481,7 +486,7 @@ def summary():
     
     btn_frame = tk.Frame()
     btn_frame.pack(padx=5, pady=5)
-    show_btn = tk.Button(btn_frame, text="Show Filteredy Transations", font=("calibri", 14), command=show_filtered_data)
+    show_btn = tk.Button(btn_frame, text="Show Filtered Transations", font=("calibri", 14), command=show_filtered_data)
     show_btn.pack(side="left", padx=5, pady=5)
     
     all_tran_btn = tk.Button(btn_frame, text="All Transations", font=("calibri", 14), command=lambda: show_all_trans(summary_window))
