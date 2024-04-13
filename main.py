@@ -25,31 +25,33 @@ username_entry.grid(row=1, column=1)
 password_entry = tk.Entry(start_window, show="*", font=("calibri", 14))
 password_entry.grid(row=2, column=1)
 
-def clear():
+# ===============================================================================================================================
+
+def clear():                                                                     # Function to clear user input
     username_entry.delete(0, "end")
     password_entry.delete(0, tk.END)
 
 # ===============================================================================================================================
 
-def update_balance_label():
+def update_balance_label():                                                      # Update balance label in realtime
     balance.config(text="Current balance : " + str(account_balance))
     
 # ===============================================================================================================================
 
-def update_last_tran():
+def update_last_tran():                                                          # Update the latest transation in realtime
     if tran_data == []:
         last_tran_label.config(text="No transation currently!!")
     else:
-        last_tran_label.config(text="Last Transation : " + str(tran_data[-1]))
+        last_tran_label.config(text="Latest Transation : " + str(tran_data[-1]))
 
 # ===============================================================================================================================      
 
-def destroy_window(window):
+def destroy_window(window):                                                     # destroy window according to parameter
     window.destroy()
 
 # ===============================================================================================================================
 
-def empty_transation_window():
+def empty_transation_window():                                                  # To handle empty transations by prompting empty transation message window
     temp = tk.Tk()
     temp.title("Empty Transation")
     temp.geometry("400x100")
@@ -60,13 +62,13 @@ def empty_transation_window():
 
 # ===============================================================================================================================
 
-def go_back(current, previous):
+def go_back(current, previous):                                                 # Go back to previous window
     current.destroy()
     previous.deiconify()
     
 # ===============================================================================================================================
 
-def update_tran_data(type, category, amount, date, source):
+def update_tran_data(type, category, amount, date, source):                     # Update the transations in realtime
     global account_balance, tran_data
     check_unique = set()
     new = rd.randint(1000, 9999)
@@ -88,7 +90,7 @@ def update_tran_data(type, category, amount, date, source):
 
 # ===============================================================================================================================
 
-def filter_by_input(start, end, type, category, source):
+def filter_by_input(start, end, type, category, source):                        # Filter by time, type, category, source 
         start_date = pd.to_datetime(start, format="%d-%b-%Y")
         end_date = pd.to_datetime(end, format="%d-%b-%Y")
         
@@ -104,7 +106,7 @@ def filter_by_input(start, end, type, category, source):
 # -----------------------------------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------
 
-def filter_by_time(start, end, type):
+def filter_by_time(start, end, type):                                           # Filter by only time and type
     start_date = pd.to_datetime(start, format="%d-%b-%Y")
     end_date = pd.to_datetime(end, format="%d-%b-%Y")
         
@@ -116,7 +118,7 @@ def filter_by_time(start, end, type):
 
 # ===============================================================================================================================
 
-def draw_piechart(data_list, pie_data):
+def draw_piechart(data_list, pie_data):                                         # Function to draw piecharts
     total_amount  = {}
     types = data_list[0]["Type"]
     for each in data_list:
@@ -137,7 +139,7 @@ def draw_piechart(data_list, pie_data):
 # -----------------------------------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------
 
-def draw_barchart(data_list, bar_data):
+def draw_barchart(data_list, bar_data):                                        # Function to draw barcharts
     total_amount  = {}
     types = data_list[0]["Type"]
     for each in data_list:
@@ -158,11 +160,11 @@ def draw_barchart(data_list, bar_data):
 
 # ===============================================================================================================================
 
-def write_file(data_list, filename):
+def write_file(data_list, filename):                                            # Function to handle Print button (writing datas in .txt file)
     if data_list == []:
         empty_transation_window()
     else:
-        keys = list(data_list[0].keys())                            
+        keys = list(data_list[0].keys())                                        # Getting the maximum width of each column
         key_widths = {}
         for each in keys:
             key_widths[each] = len(each)
@@ -174,7 +176,7 @@ def write_file(data_list, filename):
                     data[key] = ""
                 column_widths[key] = max(key_widths[key], len(str(data[key]))) 
         # ---------------------------------------------------------------------------------        
-        with open(filename, 'w') as file:
+        with open(filename, 'w') as file:                                       # Writing the datas in table like format
             file.write("Personal Finnace Tracker\n")
             file.write("User Name : " + str(user) + "\n")
             file.write("\n")
@@ -204,19 +206,20 @@ def write_file(data_list, filename):
 
 # ===============================================================================================================================
 
-def show_all_trans(window):
+def show_all_trans(window):                                                     # Function to show all transations
     window.withdraw()
 
     all_trans_window = tk.Tk()
     all_trans_window.title("All Transations")
     all_trans_window.geometry("1200x350")    
-    for each in tran_data:
+    
+    for each in tran_data:                                                      # Print every transation
         each_label = tk.Label(all_trans_window, text=str(each), font=("calibri", 14))
         each_label.pack()
     
     # ---------------------------------------------------------------------------------
     
-    def determine_pie():
+    def determine_pie():                                                        # Decide the numbers of pie chart to draw
         income_list = [data for data in tran_data if data["Type"] == "Income" ]
         expense_list = [data for data in tran_data if data["Type"] == "Expense"]
         
@@ -238,7 +241,7 @@ def show_all_trans(window):
     
     # ---------------------------------------------------------------------------------
     
-    def determine_barchart():
+    def determine_barchart():                                                   # Decide the numbers of bar chart to draw
         income_list = [data for data in tran_data if data["Type"] == "Income" ]
         expense_list = [data for data in tran_data if data["Type"] == "Expense"]
         
@@ -264,25 +267,28 @@ def show_all_trans(window):
     print_all_tran = tk.Button(all_trans_window, text="Print All Transations", font=("calibri", 14), command=lambda: write_file(tran_data, "ALl_Transations.txt"))
     print_all_tran.pack()
     
-    pie_chart_btn = tk.Button(all_trans_window, text="Pie Charts", font=("calibri", 14), command=determine_pie)
-    pie_chart_btn.pack()
-    
     # ---------------------------------------------------------------------------------
-    temp_frame = tk.Frame(all_trans_window)
+    
+    temp_frame = tk.Frame(all_trans_window)                                     # Frame to holld pie and bar chart buttons
     temp_frame.pack()
     
-    bar_chart_btn = tk.Button(temp_frame, text="Bar Charts", font=("calibri", 14), command=determine_barchart)
-    bar_chart_btn.pack(side="left", padx=5, pady=5)
+    pie_chart_btn = tk.Button(temp_frame, text="Pie Charts", font=("calibri", 14), command=determine_pie)
+    pie_chart_btn.pack(side="left", padx=5, pady=5)
     
-    go_back_btn =  tk.Button(temp_frame, text="Back", font=("calibri", 14), command=lambda: go_back(all_trans_window, window))
-    go_back_btn.pack(side="right", padx=5, pady=5)
+    bar_chart_btn = tk.Button(temp_frame, text="Bar Charts", font=("calibri", 14), command=determine_barchart)
+    bar_chart_btn.pack(side="right", padx=5, pady=5)
+    
+    # ---------------------------------------------------------------------------------
+    
+    go_back_btn =  tk.Button(all_trans_window, text="Back", font=("calibri", 14), command=lambda: go_back(all_trans_window, window))
+    go_back_btn.pack()
     # ---------------------------------------------------------------------------------
     
     all_trans_window.mainloop()
     
 # ===============================================================================================================================
     
-def piechart(previous_window):
+def piechart(previous_window):                                                  # Pie Chart Window from summary        
     previous_window.withdraw()
     
     piechart_window = tk.Tk()
@@ -291,7 +297,7 @@ def piechart(previous_window):
     
     # ---------------------------------------------------------------------------------    
     
-    date_frame = tk.Frame(piechart_window)
+    date_frame = tk.Frame(piechart_window)                                      # Frame to hold date entries
     date_frame.pack()
     
     date_range_from_label = tk.Label(date_frame, text="Time Range(From)", font=("calibri", 14))
@@ -306,7 +312,7 @@ def piechart(previous_window):
     
     # ---------------------------------------------------------------------------------    
     
-    radio_frame = tk.Frame(piechart_window)
+    radio_frame = tk.Frame(piechart_window)                                     # Frame to hold type radiobuttons
     radio_frame.pack()
     
     choose_type = tk.StringVar(value="Income")
@@ -317,9 +323,9 @@ def piechart(previous_window):
     
     # ---------------------------------------------------------------------------------    
     
-    def draw_chart():
-        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get())
-        if filtered_data == []:
+    def draw_chart():                                                          # Draw the pie chart
+        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get()) # get datas to draw pie chart
+        if filtered_data == []:                                                # To handle empty transation
             temp_window = tk.Tk()
             temp_window.geometry("600x200")
             temp_window.title("Empty transation!")
@@ -327,7 +333,7 @@ def piechart(previous_window):
             empty_alert.pack()
             temp_window.mainloop()
         else:
-            figure, pie_data = plt.subplots()
+            figure, pie_data = plt.subplots()                                 # Draw the pie chart
             draw_piechart(filtered_data, pie_data)
             plt.show()
     
@@ -343,7 +349,7 @@ def piechart(previous_window):
     
 # ===============================================================================================================================
 
-def barchart(previous_window):
+def barchart(previous_window):                                                 # Bar Chart window from summary  
     previous_window.withdraw()
     
     barchart_window = tk.Tk()
@@ -352,7 +358,7 @@ def barchart(previous_window):
         
     # ---------------------------------------------------------------------------------    
     
-    date_frame = tk.Frame(barchart_window)
+    date_frame = tk.Frame(barchart_window)                                     # Frame to hold date entries
     date_frame.pack()
     
     date_range_from_label = tk.Label(date_frame, text="Time Range(From)", font=("calibri", 14))
@@ -367,7 +373,7 @@ def barchart(previous_window):
             
     # ---------------------------------------------------------------------------------    
    
-    radio_frame = tk.Frame(barchart_window)
+    radio_frame = tk.Frame(barchart_window)                                     # Frame to hold type radiobuttons    
     radio_frame.pack()
     
     choose_type = tk.StringVar(value="Income")
@@ -378,16 +384,16 @@ def barchart(previous_window):
                 
     # ---------------------------------------------------------------------------------    
     
-    def draw_chart():
-        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get())
-        if filtered_data == []:
+    def draw_chart():                                                          # Function to draw bar chart
+        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get())  # Get datas for bar chart
+        if filtered_data == []:                                                # Handle empty transation
             temp_window = tk.Tk()
             temp_window.geometry("600x200")
             temp_window.title("Empty transation!")
             empty_alert = tk.Label(temp_window, text="There is no transation within the filtered range!!", font=("calibri", 16))
             empty_alert.pack()
             temp_window.mainloop()
-        else:
+        else:                                                                  # Draw bar chart
             figure, bar_data = plt.subplots()
             draw_barchart(filtered_data, bar_data)
             plt.show()
@@ -404,14 +410,14 @@ def barchart(previous_window):
     
 # ===============================================================================================================================
 
-def summary():
+def summary():                                                                  # Dashborad Window function
     summary_window = tk.Tk()
     summary_window.geometry("700x400")
     summary_window.title("Dashboard")
                 
     # ---------------------------------------------------------------------------------    
     
-    date_frame = tk.Frame(summary_window)
+    date_frame = tk.Frame(summary_window)                                       # Frame to hold date entries
     date_frame.pack()
     
     date_range_from_label = tk.Label(date_frame, text="Time Range(From)", font=("calibri", 14))
@@ -426,7 +432,7 @@ def summary():
                 
     # ---------------------------------------------------------------------------------    
     
-    radio_frame = tk.Frame(summary_window)
+    radio_frame = tk.Frame(summary_window)                                    # Frame to hold type radiobuttons
     radio_frame.pack()
     
     choose_type = tk.StringVar(value="Income")
@@ -437,9 +443,9 @@ def summary():
                 
     # ---------------------------------------------------------------------------------    
     
-    option_frame = tk.Frame(summary_window)
+    option_frame = tk.Frame(summary_window)                                     # Frame to hold Dropdown category menu
     option_frame.pack()
-    categories = {"Income": ["Salary", "Pension", "Interest", "Others"],
+    categories = {"Income": ["Salary", "Pension", "Interest", "Others"],        # Dropdown category menu
                   "Expense": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
     category_real = tk.StringVar(value="Salary")
     
@@ -448,36 +454,36 @@ def summary():
     category_menu = tk.OptionMenu(option_frame, category_real, *(categories["Income"] + categories["Expense"]))
     category_menu.pack(side="right")
     
-                
     # ---------------------------------------------------------------------------------    
     
-    source_label = tk.Label(summary_window, text="Payee/Source",  font=("calibri", 14))
+    source_label = tk.Label(summary_window, text="Payee/Source",  font=("calibri", 14))  # To get Payee/Source
     source_label.pack()
     source_entry = tk.Entry(summary_window)
     source_entry.pack()
     
     # ---------------------------------------------------------------------------------
     
-    def show_filtered_data():
+    def show_filtered_data():                                                       # Function to show Filtered transations
         filtered_data = filter_by_input(date_range_from.get(), date_range_to.get(), choose_type.get(), category_real.get(), source_entry.get())
         summary_window.withdraw()
         temp_window = tk.Tk()
         temp_window.title("Filterd transations")
         temp_window.geometry("800x500")
         
-        if filtered_data == []:
+        if filtered_data == []:                                                     # For empty transations
             filtered_label = tk.Label(temp_window, text="There is no transation!!", font=("calibri", 14))
             filtered_label.pack()
         else:
-            for each in filtered_data:
+            for each in filtered_data:                                              # Print filtered transtaions
                 filtered_label = tk.Label(temp_window, text=str(each), font=("calibri", 14))
                 filtered_label.pack()
+                
         temp_frame = tk.Frame(temp_window)
         temp_frame.pack()
-        print_btn = tk.Button(temp_frame, text="Print", font=("calibri", 14), command=lambda: write_file(filtered_data, "Filtered_Transations.txt"))
+        print_btn = tk.Button(temp_frame, text="Print", font=("calibri", 14), command=lambda: write_file(filtered_data, "Filtered_Transations.txt"))    # To wrtie in .txt file
         print_btn.pack(side="left", padx=5, pady=5)
         
-        go_back_btn =  tk.Button(temp_frame, text="Back", font=("calibri", 14), command=lambda: go_back(temp_window, summary_window))
+        go_back_btn =  tk.Button(temp_frame, text="Back", font=("calibri", 14), command=lambda: go_back(temp_window, summary_window)) # Go back to previous window
         go_back_btn.pack(side="right", padx=5, pady=5)
         
         temp_window.mainloop()
@@ -494,10 +500,10 @@ def summary():
                 
     # ---------------------------------------------------------------------------------    
     
-    barchart_btn = tk.Button(summary_window, text="Bar Chart", font=("calibri", 14), command=lambda: barchart(summary_window))
+    barchart_btn = tk.Button(summary_window, text="Bar Chart", font=("calibri", 14), command=lambda: barchart(summary_window))  # Draw barchart
     barchart_btn.pack(padx=5, pady=5)
     
-    piechart_btn = tk.Button(summary_window, text="Pie Chart",  font=("calibri", 14), command=lambda: piechart(summary_window))
+    piechart_btn = tk.Button(summary_window, text="Pie Chart",  font=("calibri", 14), command=lambda: piechart(summary_window)) # Draw Pie Chart
     piechart_btn.pack(padx=5, pady=5)
                 
     # ---------------------------------------------------------------------------------    
@@ -506,7 +512,7 @@ def summary():
         
 # ===============================================================================================================================
 
-def add_tran():
+def add_tran():                                                                  # Add Transations Window function
     global add_window
     add_window =tk.Tk()
     add_window.geometry("500x500")
@@ -514,7 +520,7 @@ def add_tran():
     
     # ---------------------------------------------------------------------------------
     
-    radio_frame = tk.Frame(add_window)
+    radio_frame = tk.Frame(add_window)                                          # Choose Income or Expense
     radio_frame.pack()
     
     choose_type = tk.StringVar(value="Income")
@@ -524,7 +530,7 @@ def add_tran():
     expense_radio.pack(side="right")
     
     # ---------------------------------------------------------------------------------
-    category_frame = tk.Frame(add_window)
+    category_frame = tk.Frame(add_window)                                      # Choose category
     category_frame.pack()
     categories = {"Income": ["Salary", "Pension", "Interest", "Others"],
                   "Expense": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
@@ -537,17 +543,17 @@ def add_tran():
        
     # ---------------------------------------------------------------------------------
      
-    amount_label = tk.Label(add_window, text="Amount", font=("calibri", 14))
+    amount_label = tk.Label(add_window, text="Amount", font=("calibri", 14))  # Input amount
     amount_label.pack()
     amount_entry = tk.Entry(add_window)
     amount_entry.pack()
     
-    date_label = tk.Label(add_window, text="Date(01-Apr-2004)",  font=("calibri", 14))
+    date_label = tk.Label(add_window, text="Date(01-Apr-2004)",  font=("calibri", 14))  # Input date of transation
     date_label.pack()
     date_entry = tk.Entry(add_window)
     date_entry.pack()
     
-    source_label = tk.Label(add_window, text="Payee/Source",  font=("calibri", 14))
+    source_label = tk.Label(add_window, text="Payee/Source",  font=("calibri", 14))  # Payee/Source of transation
     source_label.pack()
     source_entry = tk.Entry(add_window)
     source_entry.pack()
@@ -563,21 +569,21 @@ def add_tran():
     
 # ===============================================================================================================================
 
-def del_tran():
+def del_tran():                                                                     # Delete transation Window
     del_window = tk.Tk()
     del_window.geometry("300x300")
     del_window.title("Delete transations")
                 
     # ---------------------------------------------------------------------------------    
     
-    id_label = tk.Label(del_window, text="Please input ID to delete!")
+    id_label = tk.Label(del_window, text="Please input ID to delete!")              # Input ID to delete transation
     id_label.pack()
     id_entry = tk.Entry(del_window)
     id_entry.pack()
                 
     # ---------------------------------------------------------------------------------    
     
-    def delete_update():
+    def delete_update():                                                            # Update necessary datas after deleteing the transation
         global account_balance
         for index, data in enumerate(tran_data):
             if data["ID"] == int(id_entry.get()):
@@ -599,7 +605,7 @@ def del_tran():
 
 # ===============================================================================================================================
 
-def main_window():
+def main_window():                                                                  # The main window function
     main_window = tk.Tk()
     main_window.geometry("1200x400")
     main_window.title("Personal Finnace Tracker")
@@ -607,28 +613,28 @@ def main_window():
     # ---------------------------------------------------------------------------------    
     global user
     user = str(username_entry.get())
-    welcome = tk.Label(main_window, text="Welcome " + str(username_entry.get()) + "!" , font=("calibri", 14))
+    welcome = tk.Label(main_window, text="Welcome " + user + "!" , font=("calibri", 14))  # Personalized Greeting
     welcome.pack()
     
     start_window.destroy()
                 
     # ---------------------------------------------------------------------------------    
     global balance
-    balance = tk.Label(main_window, text="Current balance : "  + str(account_balance), font=("calibri", 14))
+    balance = tk.Label(main_window, text="Current balance : "  + str(account_balance), font=("calibri", 14))  # Initial Balance(zero)
     balance.pack()
 
     global last_tran_label
-    last_tran_label = tk.Label(main_window, text="No transation currently!!!", font=("calibri", 14))
+    last_tran_label = tk.Label(main_window, text="No transation currently!!!", font=("calibri", 14))  # Initial latest tran (which is none)
     last_tran_label.pack()
                 
     # ---------------------------------------------------------------------------------    
-    summarys_btn = tk.Button(main_window, text="Summary", font=("calibri", 14), command=summary)
+    summarys_btn = tk.Button(main_window, text="Summary", font=("calibri", 14), command=summary)      # Go to dashboard Window
     summarys_btn.pack()
     
-    add_tran_btn = tk.Button(main_window, text="Add transation", font=("calibri", 14), command=add_tran)
+    add_tran_btn = tk.Button(main_window, text="Add transation", font=("calibri", 14), command=add_tran)    # Go to Add transations Window
     add_tran_btn.pack()
     
-    del_tran_btn = tk.Button(main_window, text="Delete transation", font=("calibri" , 14), command=del_tran)
+    del_tran_btn = tk.Button(main_window, text="Delete transation", font=("calibri" , 14), command=del_tran)    # Go to Delete transation window
     del_tran_btn.pack()
                 
     # ---------------------------------------------------------------------------------    
@@ -636,10 +642,10 @@ def main_window():
         
 # ===============================================================================================================================
 
-submit_icon = tk.Button(start_window, text="Submit", font=("calibri", 14), command=main_window)
+submit_icon = tk.Button(start_window, text="Submit", font=("calibri", 14), command=main_window)       # Go to main window
 submit_icon.grid(row =4, column=0)
 
-clear_btn = tk.Button(start_window, text="Clear", font=("calibri", 14), command=clear)
+clear_btn = tk.Button(start_window, text="Clear", font=("calibri", 14), command=clear)     # Clear current input of username and password
 clear_btn.grid(row=4, column=1)
 
 start_window.mainloop()
