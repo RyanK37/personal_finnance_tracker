@@ -32,7 +32,36 @@ def update_balance_label():
 # ===============================================================================================================================
 
 def update_last_tran():
-    last_tran_label.config(text="Last Transation : " + str(tran_data[-1]))
+    if tran_data == []:
+        last_tran_label.config(text="No transation currently!!")
+    else:
+        last_tran_label.config(text="Last Transation : " + str(tran_data[-1]))
+        
+
+def destory_window(window):
+    window.destroy()
+    
+def empty_transation_window():
+    temp = tk.Tk()
+    temp.title("Empty Transation")
+    temp.geometry("400x100")
+    empty_label = tk.Label(temp, text="There is no transation", font=("calibri", 14))
+    empty_label.pack()
+    temp.after(2000, destory_window, temp)
+    temp.mainloop()
+
+def show_all_trans():
+    if tran_data == []:
+        empty_transation_window()
+    else:
+        all_trans_window = tk.Tk()
+        all_trans_window.title("All Transations")
+        all_trans_window.geometry("700x500")    
+        for each in tran_data:
+            each_label = tk.Label(all_trans_window, text=str(each), font=("calibri", 14))
+            each_label.pack()
+        all_trans_window.mainloop()
+    
     
 # ===============================================================================================================================
 
@@ -43,9 +72,9 @@ def filter_by_input(start, end, type, category, source):
         filtered_list = []
         for each_data in tran_data:
             if start_date <= pd.to_datetime(each_data["date"], format="%d-%b-%Y") <= end_date and\
-                each_data["type"] == type and\
-                each_data["category"] == category and\
-                each_data["payee/source"].lower() == source.lower():
+                each_data["Type"] == type and\
+                each_data["Category"] == category and\
+                each_data["Payee/Source"].lower() == source.lower():
                 filtered_list.append(each_data)
         return filtered_list
     
@@ -57,7 +86,7 @@ def filter_by_time(start, end, type):
         
     filtered_list = []
     for each_data in tran_data:
-        if start_date <= pd.to_datetime(each_data["date"], format="%d-%b-%Y") <= end_date and each_data["type"] == type:
+        if start_date <= pd.to_datetime(each_data["Date"], format="%d-%b-%Y") <= end_date and each_data["Type"] == type:
             filtered_list.append(each_data)
     return filtered_list
             
@@ -65,10 +94,10 @@ def filter_by_time(start, end, type):
     
 def draw_piechart(data_list):
     total_amount  = {}
-    type = data_list[0]["type"]
+    type = data_list[0]["Type"]
     for each in data_list:
-        category = each["category"]
-        amount = each["amount"]
+        category = each["Category"]
+        amount = each["Amount"]
         if category in total_amount:
             total_amount[category] += amount
         else:
@@ -86,10 +115,10 @@ def draw_piechart(data_list):
 
 def draw_barchart(data_list):
     total_amount  = {}
-    type = data_list[0]["type"]
+    type = data_list[0]["Type"]
     for each in data_list:
-        category = each["category"]
-        amount = each["amount"]
+        category = each["Category"]
+        amount = each["Amount"]
         if category in total_amount:
             total_amount[category] += amount
         else:
@@ -102,6 +131,50 @@ def draw_barchart(data_list):
     plt.title(type+ " filtered by time range")
     plt.show()
 
+# ===============================================================================================================================
+    
+def write_file(data_list, filename):
+    if data_list == []:
+        empty_transation_window()
+        
+    else:
+        keys = list(data_list[0].keys())
+        key_widths = {}
+        for each in keys:
+            key_widths[each] = len(each)
+
+        column_widths = {}
+        for data in data_list:
+            for key in keys:
+                if data[key] is None:
+                    data[key] = ""
+                column_widths[key] = max(key_widths[key], len(str(data[key]))) 
+        
+        with open(filename, 'w') as file:
+            total_place = 0
+            for key in keys:
+                left_place = column_widths[key] - len(key)
+                file.write(key + (" " * left_place) + " | " )
+                total_place += (column_widths[key] + 3 )
+            file.write("\n")
+            file.write("-"*total_place + "\n")
+            
+            for data in data_list:
+                for key in keys:
+                    values = str(data[key])
+                    left_place = column_widths[key] - len(values)
+                    file.write(values + (" " * left_place) + " | ")
+                file.write("\n")
+        
+        temp = tk.Tk()
+        temp.title("Print successful")
+        temp.geometry("500x300")
+        success_label = tk.Label(temp, text="The filtered transations are printed successfully!!", font=("calibri", 14))
+        success_label.pack()
+        temp.after(1000, destory_window, temp)
+        temp.mainloop()   
+    
+                
 # ===============================================================================================================================
 
 def piechart(previous_window):
@@ -244,28 +317,35 @@ def summary():
     
     def show_filtered_data():
         filtered_data = filter_by_input(date_range_from.get(), date_range_to.get(), choose_type.get(), category_real.get(), source_entry.get())
-        
+        temp_window = tk.Tk()
+        temp_window.title("Filterd transations")
+        temp_window.geometry("800x500")
         if filtered_data == []:
-            filtered_label = tk.Label(summary_window, text="There is no transation!!", font=("calibri", 14))
+            filtered_label = tk.Label(temp_window, text="There is no transation!!", font=("calibri", 14))
             filtered_label.pack()
         else:
             for each in filtered_data:
-                filtered_label = tk.Label(summary_window, text=str(each), font=("calibri", 14))
+                filtered_label = tk.Label(temp_window, text=str(each), font=("calibri", 14))
                 filtered_label.pack()
+                
+        print_btn = tk.Button(temp_window, text="Print", font=("calibri", 14), command=lambda: write_file(filtered_data, "Filtered_Transations.txt"))
+        print_btn.pack()
+        temp_window.mainloop()
             
     # ---------------------------------------------------------------------------------
-        
-    show_btn = tk.Button(summary_window, text="Show", font=("calibri", 14), command=show_filtered_data)
-    show_btn.pack()
+    btn_frame = tk.Frame()
+    btn_frame.pack(padx=5, pady=5)
+    show_btn = tk.Button(btn_frame, text="Show", font=("calibri", 14), command=show_filtered_data)
+    show_btn.pack(side="left", padx=5, pady=5)
     
-    # print_btn = tk.Button(summary_window, text="Print", font=("calibri", 14), command=)
-    # print_btn.pack()
+    all_tran_btn = tk.Button(btn_frame, text="All Transations", font=("calibri", 14), command=show_all_trans)
+    all_tran_btn.pack(side="right", padx=5, pady=5)
     
     barchart_btn = tk.Button(summary_window, text="Bar Chart", font=("calibri", 14), command=lambda: barchart(summary_window))
-    barchart_btn.pack()
+    barchart_btn.pack(padx=5, pady=5)
     
     piechart_btn = tk.Button(summary_window, text="Pie Chart",  font=("calibri", 14), command=lambda: piechart(summary_window))
-    piechart_btn.pack()
+    piechart_btn.pack(padx=5, pady=5)
     
     summary_window.mainloop()
         
@@ -278,7 +358,7 @@ def update_tran_data(type, category, amount, date, source):
         random_id = new
         check_unique.add(new)
             
-    new_tran_data = {"ID" : random_id, "type" : type , "category" : category, "amount" : amount, "payee/source" : source, "date" : date}
+    new_tran_data = {"ID" : random_id, "Type" : type , "Category" : category, "Amount" : amount, "Payee/Source" : source, "Date" : date}
     tran_data.append(new_tran_data)
     
     if type == "Income":
@@ -360,15 +440,16 @@ def del_tran():
     
     def delete_update():
         global account_balance
-        for i in tran_data:
-            if i["ID"] == int(id_entry.get()):
-                if i["type"] == "Income":
-                    account_balance -= i["amount"]
-                elif i["type"] == "Expense":
-                    account_balance += i["amount"]
-                tran_data.remove(i)
-                update_balance_label()
-                update_last_tran()
+        for index, data in enumerate(tran_data):
+            if data["ID"] == int(id_entry.get()):
+                if data["Type"] == "Income":
+                    account_balance -= data["Amount"]
+                elif data["Type"] == "Expense":
+                    account_balance += data["Amount"]
+                
+        del tran_data[index]
+        update_balance_label()
+        update_last_tran()
         del_window.destroy()
     
     del_btn = tk.Button(del_window, text="Delete", font=("calibri", 14), command=delete_update)
