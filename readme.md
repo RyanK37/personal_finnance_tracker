@@ -20,8 +20,9 @@ Add Transation Window - Add new transations : has radio buttons, dropdown menu
 Delete Transation Window - Can delete transations by giving exact ID of a transation.
 
 
+Python version >> Python 3.11.5
+
 list of the libraires :
-    Python version >> Python 3.11.5
     random 
     tkinter
     matplotlib version >>  3.8.2
