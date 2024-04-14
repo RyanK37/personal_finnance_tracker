@@ -45,8 +45,8 @@ def update_last_tran():                                                         
     else:
         transation_string =""
         for data in tran_data:
-            transation_string += str(data) + "\n"
-        last_tran_label.config(text="Latest Transations : " + transation_string)
+            transation_string += str(data) + "\n" 
+        last_tran_label.config(text="Latest Transations : \n" + transation_string)
 
 # ===============================================================================================================================      
 
