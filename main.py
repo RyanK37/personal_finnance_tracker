@@ -35,7 +35,7 @@ def clear():                                                                    
 # ===============================================================================================================================
 
 def update_balance_label():                                                      # Update balance label in realtime
-    balance.config(text="Current balance : " + str(account_balance))
+        balance.config(text="Current balance : " + str(account_balance))
     
 # ===============================================================================================================================
 
@@ -43,7 +43,10 @@ def update_last_tran():                                                         
     if tran_data == []:
         last_tran_label.config(text="No transation currently!!")
     else:
-        last_tran_label.config(text="Latest Transation : " + str(tran_data[-1]))
+        transation_string =""
+        for data in tran_data:
+            transation_string += str(data) + "\n"
+        last_tran_label.config(text="Latest Transations : " + transation_string)
 
 # ===============================================================================================================================      
 
