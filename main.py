@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 import random as rd
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -201,7 +202,7 @@ def write_file(data_list, filename):                                            
         temp.geometry("500x300")
         success_label = tk.Label(temp, text="The filtered transations are printed successfully!!", font=("calibri", 14))
         success_label.pack()
-        temp.after(1000, destroy_window, temp)
+        temp.after(1000, lambda:destroy_window(temp))
         temp.mainloop()   
 
 # ===============================================================================================================================
@@ -289,7 +290,7 @@ def show_all_trans(window):                                                     
 # ===============================================================================================================================
     
 def piechart(previous_window):                                                  # Pie Chart Window from summary        
-    previous_window.withdraw()
+    previous_window.destroy()
     
     piechart_window = tk.Tk()
     piechart_window.geometry("500x400")
@@ -312,19 +313,19 @@ def piechart(previous_window):                                                  
     
     # ---------------------------------------------------------------------------------    
     
-    radio_frame = tk.Frame(piechart_window)                                     # Frame to hold type radiobuttons
-    radio_frame.pack()
+    radio_frame_pie = tk.Frame(piechart_window)                                     # Frame to hold type radiobuttons
+    radio_frame_pie.pack()
     
-    choose_type = tk.StringVar(value="Income")
-    income_radio = tk.Radiobutton(radio_frame, text="Income", variable=choose_type, value="Income", font=("calibri", 14))
-    income_radio.pack(side="left")
-    expense_radio = tk.Radiobutton(radio_frame, text="Expense", variable=choose_type, value="Expense", font=("calibri", 14))
-    expense_radio.pack(side="right")
+    choose_type_pie = tk.StringVar(value="Income")
+    income_radio_pie= tk.Radiobutton(radio_frame_pie, text="Income", variable=choose_type_pie, value="Income", font=("calibri", 14))
+    income_radio_pie.pack(side="left")
+    expense_radio_pie = tk.Radiobutton(radio_frame_pie, text="Expense", variable=choose_type_pie, value="Expense", font=("calibri", 14))
+    expense_radio_pie.pack(side="right")
     
     # ---------------------------------------------------------------------------------    
     
-    def draw_chart():                                                          # Draw the pie chart
-        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get()) # get datas to draw pie chart
+    def draw_chart():                                                           # Draw the pie chart
+        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type_pie.get()) # get datas to draw pie chart
         if filtered_data == []:                                                # To handle empty transation
             temp_window = tk.Tk()
             temp_window.geometry("600x200")
@@ -342,7 +343,11 @@ def piechart(previous_window):                                                  
     draw_piechart_btn = tk.Button(piechart_window, text="Draw Pie Chart", font=("calibri", 14), command=draw_chart)
     draw_piechart_btn.pack()
     
-    go_back_btn =  tk.Button(piechart_window, text="Back", font=("calibri", 14), command=lambda: go_back(piechart_window, previous_window))
+    def go_back_summary():
+        piechart_window.destroy()
+        summary()
+        
+    go_back_btn =  tk.Button(piechart_window, text="Back", font=("calibri", 14), command=go_back_summary)
     go_back_btn.pack()
     
     piechart_window.mainloop()
@@ -350,11 +355,11 @@ def piechart(previous_window):                                                  
 # ===============================================================================================================================
 
 def barchart(previous_window):                                                 # Bar Chart window from summary  
-    previous_window.withdraw()
+    previous_window.destroy()
     
     barchart_window = tk.Tk()
     barchart_window.geometry("500x400")
-    barchart_window.title("Pie Chart")     
+    barchart_window.title("Bar Chart")     
         
     # ---------------------------------------------------------------------------------    
     
@@ -373,19 +378,19 @@ def barchart(previous_window):                                                 #
             
     # ---------------------------------------------------------------------------------    
    
-    radio_frame = tk.Frame(barchart_window)                                     # Frame to hold type radiobuttons    
-    radio_frame.pack()
+    radio_frame_bar = tk.Frame(barchart_window)                                     # Frame to hold type radiobuttons    
+    radio_frame_bar.pack()
     
-    choose_type = tk.StringVar(value="Income")
-    income_radio = tk.Radiobutton(radio_frame, text="Income", variable=choose_type, value="Income", font=("calibri", 14))
-    income_radio.pack(side="left")
-    expense_radio = tk.Radiobutton(radio_frame, text="Expense", variable=choose_type, value="Expense", font=("calibri", 14))
-    expense_radio.pack(side="right")
+    choose_type_bar= tk.StringVar(value="Income")
+    income_radio_bar = tk.Radiobutton(radio_frame_bar, text="Income", variable=choose_type_bar, value="Income", font=("calibri", 14))
+    income_radio_bar.pack(side="left")
+    expense_radio_bar = tk.Radiobutton(radio_frame_bar, text="Expense", variable=choose_type_bar, value="Expense", font=("calibri", 14))
+    expense_radio_bar.pack(side="right")
                 
     # ---------------------------------------------------------------------------------    
     
-    def draw_chart():                                                          # Function to draw bar chart
-        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type.get())  # Get datas for bar chart
+    def draw_chart():                                                       # Function to draw bar chart
+        filtered_data = filter_by_time(date_range_from.get(), date_range_to.get(), choose_type_bar.get())  # Get datas for bar chart
         if filtered_data == []:                                                # Handle empty transation
             temp_window = tk.Tk()
             temp_window.geometry("600x200")
@@ -403,7 +408,11 @@ def barchart(previous_window):                                                 #
     draw_barchart_btn = tk.Button(barchart_window, text="Draw Bar Chart", font=("calibri", 14), command=draw_chart)
     draw_barchart_btn.pack()
     
-    go_back_btn =  tk.Button(barchart_window, text="Back", font=("calibri", 14), command=lambda: go_back(barchart_window, previous_window))
+    def go_back_summary():
+        barchart_window.destroy()
+        summary()
+        
+    go_back_btn =  tk.Button(barchart_window, text="Back", font=("calibri", 14), command=go_back_summary)
     go_back_btn.pack()
     
     barchart_window.mainloop()
@@ -432,20 +441,20 @@ def summary():                                                                  
                 
     # ---------------------------------------------------------------------------------    
     
-    radio_frame = tk.Frame(summary_window)                                    # Frame to hold type radiobuttons
-    radio_frame.pack()
+    radio_frame_summary = tk.Frame(summary_window)                                    # Frame to hold type radiobuttons
+    radio_frame_summary.pack()
     
-    choose_type = tk.StringVar(value="Income")
-    income_radio = tk.Radiobutton(radio_frame, text="Income", variable=choose_type, value="Income", font=("calibri", 14))
-    income_radio.pack(side="left")
-    expense_radio = tk.Radiobutton(radio_frame, text="Expense", variable=choose_type, value="Expense", font=("calibri", 14))
-    expense_radio.pack(side="right")
+    choose_type_summary = tk.StringVar(value="Income")
+    income_radio_summary = tk.Radiobutton(radio_frame_summary, text="Income", variable=choose_type_summary, value="Income", font=("calibri", 14))
+    income_radio_summary.pack(side="left")
+    expense_radio_summary = tk.Radiobutton(radio_frame_summary, text="Expense", variable=choose_type_summary, value="Expense", font=("calibri", 14))
+    expense_radio_summary.pack(side="right")
                 
     # ---------------------------------------------------------------------------------    
     
     option_frame = tk.Frame(summary_window)                                     # Frame to hold Dropdown category menu
     option_frame.pack()
-    categories = {"Income": ["Salary", "Pension", "Interest", "Others"],        # Dropdown category menu
+    categories = {"Income": ["Salary", "Pension", "Interest"],        # Dropdown category menu
                   "Expense": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
     category_real = tk.StringVar(value="Salary")
     
@@ -464,7 +473,7 @@ def summary():                                                                  
     # ---------------------------------------------------------------------------------
     
     def show_filtered_data():                                                       # Function to show Filtered transations
-        filtered_data = filter_by_input(date_range_from.get(), date_range_to.get(), choose_type.get(), category_real.get(), source_entry.get())
+        filtered_data = filter_by_input(date_range_from.get(), date_range_to.get(), choose_type_summary.get(), category_real.get(), source_entry.get())
         summary_window.withdraw()
         temp_window = tk.Tk()
         temp_window.title("Filterd transations")
@@ -532,13 +541,13 @@ def add_tran():                                                                 
     # ---------------------------------------------------------------------------------
     category_frame = tk.Frame(add_window)                                      # Choose category
     category_frame.pack()
-    categories = {"Income": ["Salary", "Pension", "Interest", "Others"],
+    categories = {"Income": ["Salary", "Pension", "Interest"],
                   "Expense": ["Food", "Rent", "Clothing", "Car", "Health", "Others"]}
     category_real = tk.StringVar(value="Salary")
     
     category_label =tk.Label(category_frame, text="Category:",  font=("calibri", 14))
     category_label.pack(side="left")
-    category_menu = tk.OptionMenu(category_frame, category_real, *categories["Income"] + categories["Expense"])
+    category_menu = tk.OptionMenu(category_frame, category_real, *(categories["Income"] + categories["Expense"]))
     category_menu.pack(side="right")
        
     # ---------------------------------------------------------------------------------
@@ -560,7 +569,7 @@ def add_tran():                                                                 
         
     # ---------------------------------------------------------------------------------
     
-    add_btn = tk.Button(add_window, text="Submit" , font=("calibri", 14), command=lambda : update_tran_data(choose_type.get(), category_real.get(), int(amount_entry.get()), date_entry.get(), source_entry.get()))
+    add_btn = tk.Button(add_window, text="Submit" , font=("calibri", 14), command=lambda : update_tran_data(choose_type.get(), category_real.get(), float(amount_entry.get()), date_entry.get(), source_entry.get()))
     add_btn.pack()
         
     # ---------------------------------------------------------------------------------
