@@ -23,7 +23,7 @@ Delete Transation Window - Can delete transations by giving exact ID of a transa
 Python version >> Python 3.11.5
 
 list of the libraires :
-    random 
-    tkinter
-    matplotlib version >>  3.8.2
-    pandas version >> 2.2.2
+- random 
+- tkinter
+- matplotlib version >>  3.8.2
+- pandas version >> 2.2.2
